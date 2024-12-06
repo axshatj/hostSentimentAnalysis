@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentiment Analysis</title>
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #4CAF50;
+        }
+
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 12px;
+            font-size: 1em;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
+            resize: none;
+            outline: none;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            font-size: 1.1em;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            textarea {
+                font-size: 1em;
+                height: 120px;
+            }
+
+            button {
+                padding: 10px 25px;
+                font-size: 1em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 1.6em;
+            }
+
+            textarea {
+                font-size: 0.9em;
+                height: 100px;
+            }
+
+            button {
+                padding: 8px 20px;
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Sentiment Analysis using LSTM model</h1>
+        <form id="reviewForm">
+            <textarea id="review" name="review" placeholder="Enter your review here..." required></textarea><br>
+            <button type="button" onclick="submitReview()">Submit</button>
+        </form>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        async function submitReview() {
+            const review = document.getElementById("review").value;
+            
+            // Clear the result when review is empty
+            if (!review) {
+                document.getElementById("result").textContent = '';  // Clear the result display
+                return;  // Do nothing if review is empty
+            }
+    
+            // If review is not empty, send it for sentiment prediction
+            const response = await fetch("/predict", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ review })
+            });
+    
+            const result = await response.json();
+            document.getElementById("result").textContent = `Prediction: ${result.sentiment}`;
+        }
+    
+        // Clear the review and sentiment result when the user clears the review box
+        document.getElementById("review").addEventListener("input", function () {
+            if (this.value === "") {
+                document.getElementById("result").textContent = '';  // Clear sentiment result
+            }
+        });
+    </script>
+    
+</body>
+</html>
